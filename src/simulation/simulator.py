@@ -1,6 +1,8 @@
 """Methods for generating data based on given differential equations."""
 
-def Simulator():
+from typing_extensions import List
+
+class Simulator():
     def __init__(self):
         self.diffeq = "something"
         self.noise = "another_thing"
