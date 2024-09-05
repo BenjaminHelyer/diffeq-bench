@@ -1,13 +1,13 @@
 """Tests for the Simulator class."""
 
 import sys
-from pathlib import Path
+import os
 
 import torch
 
 import pytest
 
-SRC_PATH = Path(__file__).parent.parent.parent / "src"
+SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src'))
 sys.path.append(SRC_PATH)
 from simulation.simulator import Simulator
 
