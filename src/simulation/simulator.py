@@ -82,4 +82,4 @@ class Simulator:
     def clear_sims(
             self,
     ):
-        self.sol = []
+        self.sols = []
