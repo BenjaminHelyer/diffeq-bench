@@ -7,7 +7,7 @@ import torch
 
 import pytest
 
-SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src'))
+SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../src"))
 sys.path.append(SRC_PATH)
 from simulation.simulator import Simulator
 
@@ -37,7 +37,14 @@ def test_simulator_scipy_solver_logistic_growth_happy_path(backend_option):
     uut_solver = Simulator(
         backend=backend_option,
     )
-    sol = uut_solver.generate_numeric_sol_ivp(diffeq_func=diffeq_logistic_growth, args=(0.5, 200, 0.02, 100), ic=[1.0, 2.0], ti=0.0, tf=10.0, dt=0.1)
+    sol = uut_solver.generate_numeric_sol_ivp(
+        diffeq_func=diffeq_logistic_growth,
+        args=(0.5, 200, 0.02, 100),
+        ic=[1.0, 2.0],
+        ti=0.0,
+        tf=10.0,
+        dt=0.1,
+    )
 
     if backend_option == "scipy":
         assert sol.success == True

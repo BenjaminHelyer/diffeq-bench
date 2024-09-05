@@ -5,7 +5,7 @@ import os
 
 import pytest
 
-SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src'))
+SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../src"))
 sys.path.append(SRC_PATH)
 from simulation.scipy_solver import SciPySolver
 
