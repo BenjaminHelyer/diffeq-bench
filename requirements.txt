@@ -1,2 +1,7 @@
 pytest
 pylint
+scipy
+torchdiffeq
+jax
+diffrax
+matplotlib
