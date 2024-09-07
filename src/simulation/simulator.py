@@ -65,6 +65,9 @@ class Simulator:
 
     def plot_numeric_sol_ivp(
         self,
+        label_x: str = "t",
+        label_y: str = "y",
+        title: str = "Title",
     ):
         for sol in self.sols:
             if self.backend == "scipy":
@@ -73,9 +76,9 @@ class Simulator:
             else:
                 raise NotImplementedError
 
-            plt.xlabel("t")
-            plt.ylabel("y")
-            plt.title("Title")
+            plt.xlabel(label_x)
+            plt.ylabel(label_y)
+            plt.title(title)
 
         return plt
     
