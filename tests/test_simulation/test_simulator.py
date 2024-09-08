@@ -56,7 +56,7 @@ def test_simulator_logistic_growth_happy_path(backend_option):
         assert sol.ys[0].size == 100
         assert sol.ys[1].size == 100
 
-@pytest.mark.parametrize("backend_option", [("scipy")])
+@pytest.mark.parametrize("backend_option", [("scipy"), ("pytorch"), ("jax")])
 def test_simulator_cpu_sequential_solve_ics_logistic_growth(backend_option):
     """
     Tests the simulator's benchmarking capabilities
@@ -82,8 +82,14 @@ def test_simulator_cpu_sequential_solve_ics_logistic_growth(backend_option):
         tf=10.0,
         dt=0.1,
     )
-
-    if backend_option == "scipy":
-        assert len(uut_solver.sols) == 3
-        for sol in uut_solver.sols:
+    assert len(uut_solver.sols) == 3
+    for sol in uut_solver.sols:
+        if backend_option == "scipy":
             assert sol.success == True
+        elif backend_option == "pytorch":
+            assert sol.size() == torch.Size([100, 2])
+        elif backend_option == "jax":
+            assert sol.ts.size == 100
+            assert len(sol.ys) == 2
+            assert sol.ys[0].size == 100
+            assert sol.ys[1].size == 100
