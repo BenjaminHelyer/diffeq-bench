@@ -32,7 +32,7 @@ class SciPySolver(DiffeqSolver):
             y0=ic,
             t_eval=t_eval,
             args=[args],  # have to pass a list here since it tries to unpack the args
-            method='RK45',
+            method="RK45",
         )
         return sol
 

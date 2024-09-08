@@ -1,12 +1,14 @@
 """Methods for generating data based on given differential equations."""
 
 from typing import Callable, Union, Literal, List
+import time
 
 import matplotlib.pyplot as plt
 
 from simulation.scipy_solver import SciPySolver
 from simulation.pytorch_solver import PyTorchSolver
 from simulation.jax_solver import JaxSolver
+from simulation.utils import benchmark_time
 
 
 class Simulator:
@@ -69,6 +71,9 @@ class Simulator:
         label_y: str = "y",
         title: str = "Title",
     ):
+        """
+        Plots the numeric solutions previously generated.
+        """
         for sol in self.sols:
             if self.backend == "scipy":
                 z = sol.y
@@ -81,8 +86,39 @@ class Simulator:
             plt.title(title)
 
         return plt
-    
+
     def clear_sims(
-            self,
+        self,
     ):
+        """
+        Clears the simulation results.
+        Useful when, e.g., trying to use
+        this class' plot functions on a new
+        round of simulations.
+        """
         self.sols = []
+
+    @benchmark_time
+    def cpu_sequential_solve_ics(
+        self,
+        ics: List[List[float]],
+        diffeq_func: Callable,
+        args: List[float],
+        ti: float,
+        tf: float,
+        dt: float,
+    ):
+        """
+        Solves the differential equation with multiple initial conditions
+        on the CPU. This is done sequentially, i.e., the solutions for
+        the initial conditions are solved one at a time, one after another.
+        """
+        for ic in ics:
+            self.generate_numeric_sol_ivp(
+                diffeq_func=diffeq_func,
+                args=args,
+                ic=ic,
+                ti=ti,
+                tf=tf,
+                dt=dt,
+            )
