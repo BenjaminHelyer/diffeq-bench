@@ -11,6 +11,7 @@ SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../src"))
 sys.path.append(SRC_PATH)
 from simulation.simulator import Simulator
 
+
 def diffeq_logistic_growth(t, z, args):
     """
     Example diffeq for logistic growth.
@@ -21,15 +22,14 @@ def diffeq_logistic_growth(t, z, args):
     dydt = a_y * (b_y - y)
     return [dxdt, dydt]
 
+
 @pytest.fixture
 def logistic_growth_params():
     return (0.5, 200, 0.02, 100)
 
 
 @pytest.mark.parametrize("backend_option", ["scipy", "pytorch", "jax"])
-def test_simulator_logistic_growth_happy_path(
-    backend_option, logistic_growth_params
-):
+def test_simulator_logistic_growth_happy_path(backend_option, logistic_growth_params):
     """
     Happy-path for running the Simulator object on a logistic
     growth model with various backends.

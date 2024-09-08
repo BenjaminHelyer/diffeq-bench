@@ -111,8 +111,8 @@ class Simulator:
     ):
         """
         Solves the differential equation with multiple initial conditions
-        on the CPU, sequentially. 
-        
+        on the CPU, sequentially.
+
         This is done sequentially, i.e., the solutions for
         the initial conditions are solved one at a time, one after another.
         """
@@ -126,7 +126,9 @@ class Simulator:
                 dt=dt,
             )
 
-    def _multiprocess_solve_and_store(self, tmp_solutions_list, diffeq_func, args, ic, ti, tf, dt):
+    def _multiprocess_solve_and_store(
+        self, tmp_solutions_list, diffeq_func, args, ic, ti, tf, dt
+    ):
         """
         Leveraged by multiprocessing to store the result to a temporary list rather than the class variable.
         """
@@ -146,15 +148,18 @@ class Simulator:
     ):
         """
         Solves the differential equation with multiple initial conditions
-        on the CPU, in parallel. 
-        
+        on the CPU, in parallel.
+
         This is done in paralell via multiprocessing.
         """
         manager = mp.Manager()
         tmp_solutions_list = manager.list()
 
         pool = mp.Pool(processes=num_processes)
-        pool.starmap(self._multiprocess_solve_and_store, [(tmp_solutions_list, diffeq_func, args, ic, ti, tf, dt) for ic in ics])
+        pool.starmap(
+            self._multiprocess_solve_and_store,
+            [(tmp_solutions_list, diffeq_func, args, ic, ti, tf, dt) for ic in ics],
+        )
         pool.close()
         pool.join()
 
