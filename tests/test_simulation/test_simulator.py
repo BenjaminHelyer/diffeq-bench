@@ -11,21 +11,15 @@ SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../src"))
 sys.path.append(SRC_PATH)
 from simulation.simulator import Simulator
 
-
-@pytest.fixture
-def diffeq_logistic_growth():
-    def _diffeq_logistic_growth(t, z, args):
-        """
-        Example diffeq for logistic growth.
-        """
-        a_x, b_x, a_y, b_y = args
-        x, y = z
-        dxdt = a_x * (b_x - x)
-        dydt = a_y * (b_y - y)
-        return [dxdt, dydt]
-
-    return _diffeq_logistic_growth
-
+def diffeq_logistic_growth(t, z, args):
+    """
+    Example diffeq for logistic growth.
+    """
+    a_x, b_x, a_y, b_y = args
+    x, y = z
+    dxdt = a_x * (b_x - x)
+    dydt = a_y * (b_y - y)
+    return [dxdt, dydt]
 
 @pytest.fixture
 def logistic_growth_params():
@@ -34,7 +28,7 @@ def logistic_growth_params():
 
 @pytest.mark.parametrize("backend_option", ["scipy", "pytorch", "jax"])
 def test_simulator_logistic_growth_happy_path(
-    backend_option, diffeq_logistic_growth, logistic_growth_params
+    backend_option, logistic_growth_params
 ):
     """
     Happy-path for running the Simulator object on a logistic
@@ -71,7 +65,7 @@ def test_simulator_logistic_growth_happy_path(
 
 @pytest.mark.parametrize("backend_option", [("scipy"), ("pytorch"), ("jax")])
 def test_simulator_cpu_sequential_solve_ics_logistic_growth(
-    backend_option, diffeq_logistic_growth, logistic_growth_params
+    backend_option, logistic_growth_params
 ):
     """
     Tests the simulator's benchmarking capabilities
@@ -107,7 +101,7 @@ def test_simulator_cpu_sequential_solve_ics_logistic_growth(
 
 @pytest.mark.parametrize("backend_option", [("scipy"), ("pytorch"), ("jax")])
 def test_simulator_cpu_parallel_solve_ics_logistic_growth(
-    backend_option, diffeq_logistic_growth, logistic_growth_params
+    backend_option, logistic_growth_params
 ):
     """
     Tests the simulator's benchmarking capabilities
