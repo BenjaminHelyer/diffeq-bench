@@ -56,6 +56,7 @@ def test_simulator_logistic_growth_happy_path(backend_option):
         assert sol.ys[0].size == 100
         assert sol.ys[1].size == 100
 
+
 @pytest.mark.parametrize("backend_option", [("scipy"), ("pytorch"), ("jax")])
 def test_simulator_cpu_sequential_solve_ics_logistic_growth(backend_option):
     """
