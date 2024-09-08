@@ -1,7 +1,8 @@
 """Methods for generating data based on given differential equations."""
 
 from typing import Callable, Union, Literal, List
-import time
+import multiprocessing as mp
+from functools import partial
 
 import matplotlib.pyplot as plt
 
@@ -110,7 +111,9 @@ class Simulator:
     ):
         """
         Solves the differential equation with multiple initial conditions
-        on the CPU. This is done sequentially, i.e., the solutions for
+        on the CPU, sequentially. 
+        
+        This is done sequentially, i.e., the solutions for
         the initial conditions are solved one at a time, one after another.
         """
         for ic in ics:
@@ -122,3 +125,25 @@ class Simulator:
                 tf=tf,
                 dt=dt,
             )
+
+    @benchmark_time
+    def cpu_parallel_solve_ics(
+        self,
+        ics: List[List[float]],
+        diffeq_func: Callable,
+        args: List[float],
+        ti: float,
+        tf: float,
+        dt: float,
+        num_processes: int = None,
+    ):
+        """
+        Solves the differential equation with multiple initial conditions
+        on the CPU, in parallel. 
+        
+        This is done in paralell via multiprocessing.
+        """
+        pool = mp.Pool(processes=num_processes)
+        pool.starmap(self.generate_numeric_sol_ivp, [(diffeq_func, args, ic, ti, tf, dt) for ic in ics])
+        pool.close()
+        pool.join()

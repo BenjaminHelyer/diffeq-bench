@@ -94,3 +94,42 @@ def test_simulator_cpu_sequential_solve_ics_logistic_growth(backend_option):
             assert len(sol.ys) == 2
             assert sol.ys[0].size == 100
             assert sol.ys[1].size == 100
+
+@pytest.mark.parametrize("backend_option", [("scipy"), ("pytorch"), ("jax")])
+def test_simulator_cpu_parallel_solve_ics_logistic_growth(backend_option):
+    """
+    Tests the simulator's benchmarking capabilities
+    for a benchmarking a set of initial conditions.
+
+    This is the test for the parallel CPU benchmarks.
+    """
+    a_x = 0.5
+    b_x = 200
+    a_y = 0.02
+    b_y = 100
+
+    ics = [[1.0, 2.0], [2.0, 2.0], [1.0, 1.0]]
+
+    uut_solver = Simulator(
+        backend=backend_option,
+    )
+    uut_solver.cpu_parallel_solve_ics(
+        diffeq_func=diffeq_logistic_growth,
+        args=(0.5, 200, 0.02, 100),
+        ics=ics,
+        ti=0.0,
+        tf=10.0,
+        dt=0.1,
+        num_processes=10,
+    )
+    assert len(uut_solver.sols) == 3
+    for sol in uut_solver.sols:
+        if backend_option == "scipy":
+            assert sol.success == True
+        elif backend_option == "pytorch":
+            assert sol.size() == torch.Size([100, 2])
+        elif backend_option == "jax":
+            assert sol.ts.size == 100
+            assert len(sol.ys) == 2
+            assert sol.ys[0].size == 100
+            assert sol.ys[1].size == 100
