@@ -126,6 +126,13 @@ class Simulator:
                 dt=dt,
             )
 
+    def _multiprocess_solve_and_store(self, tmp_solutions_list, diffeq_func, args, ic, ti, tf, dt):
+        """
+        Leveraged by multiprocessing to store the result to a temporary list rather than the class variable.
+        """
+        sol = self.generate_numeric_sol_ivp(diffeq_func, args, ic, ti, tf, dt)
+        tmp_solutions_list.append(sol)
+
     @benchmark_time
     def cpu_parallel_solve_ics(
         self,
@@ -143,7 +150,12 @@ class Simulator:
         
         This is done in paralell via multiprocessing.
         """
+        manager = mp.Manager()
+        tmp_solutions_list = manager.list()
+
         pool = mp.Pool(processes=num_processes)
-        pool.starmap(self.generate_numeric_sol_ivp, [(diffeq_func, args, ic, ti, tf, dt) for ic in ics])
+        pool.starmap(self._multiprocess_solve_and_store, [(tmp_solutions_list, diffeq_func, args, ic, ti, tf, dt) for ic in ics])
         pool.close()
         pool.join()
+
+        self.sols.extend(tmp_solutions_list)
