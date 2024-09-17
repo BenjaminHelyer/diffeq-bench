@@ -138,14 +138,14 @@ class Simulator:
         tmp_solutions_list.append(sol)
 
     def _multiprocess_solve_ics(
-            self,
-            ics: List[List[float]],
-            diffeq_func: Callable,
-            args: List[float],
-            ti: float,
-            tf: float,
-            dt: float,
-            num_processes: int = None,
+        self,
+        ics: List[List[float]],
+        diffeq_func: Callable,
+        args: List[float],
+        ti: float,
+        tf: float,
+        dt: float,
+        num_processes: int = None,
     ):
         """
         Uses Python's multiprocessing routine.

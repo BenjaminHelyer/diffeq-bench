@@ -135,3 +135,7 @@ def test_simulator_cpu_parallel_solve_ics_logistic_growth(
             assert len(sol.ys) == 2
             assert sol.ys[0].size == 100
             assert sol.ys[1].size == 100
+
+
+if __name__ == "__main__":
+    test_simulator_cpu_parallel_solve_ics_logistic_growth("jax", logistic_growth_params)
