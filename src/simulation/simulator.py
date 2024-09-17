@@ -5,6 +5,8 @@ import multiprocessing as mp
 from functools import partial
 
 import matplotlib.pyplot as plt
+import jax
+import jax.numpy as jnp
 
 from simulation.scipy_solver import SciPySolver
 from simulation.pytorch_solver import PyTorchSolver
@@ -135,6 +137,33 @@ class Simulator:
         sol = self.generate_numeric_sol_ivp(diffeq_func, args, ic, ti, tf, dt)
         tmp_solutions_list.append(sol)
 
+    def _multiprocess_solve_ics(
+            self,
+            ics: List[List[float]],
+            diffeq_func: Callable,
+            args: List[float],
+            ti: float,
+            tf: float,
+            dt: float,
+            num_processes: int = None,
+    ):
+        """
+        Uses Python's multiprocessing routine.
+        Compatible with NumPy and PyTorch solvers.
+        """
+        manager = mp.Manager()
+        tmp_solutions_list = manager.list()
+
+        pool = mp.Pool(processes=num_processes)
+        pool.starmap(
+            self._multiprocess_solve_and_store,
+            [(tmp_solutions_list, diffeq_func, args, ic, ti, tf, dt) for ic in ics],
+        )
+        pool.close()
+        pool.join()
+
+        self.sols.extend(tmp_solutions_list)
+
     @benchmark_time
     def cpu_parallel_solve_ics(
         self,
@@ -152,15 +181,53 @@ class Simulator:
 
         This is done in paralell via multiprocessing.
         """
-        manager = mp.Manager()
-        tmp_solutions_list = manager.list()
+        if self.backend == "jax":
+            self.solve_ics_with_vmap(
+                ics,
+                diffeq_func,
+                args,
+                ti,
+                tf,
+                dt,
+                num_processes,
+            )
+        else:
+            self._multiprocess_solve_ics(
+                ics,
+                diffeq_func,
+                args,
+                ti,
+                tf,
+                dt,
+                num_processes,
+            )
 
-        pool = mp.Pool(processes=num_processes)
-        pool.starmap(
-            self._multiprocess_solve_and_store,
-            [(tmp_solutions_list, diffeq_func, args, ic, ti, tf, dt) for ic in ics],
+    @benchmark_time
+    def solve_ics_with_vmap(
+        self,
+        ics: List[List[float]],
+        diffeq_func: Callable,
+        args: List[float],
+        ti: float,
+        tf: float,
+        dt: float,
+        num_processes: float = None,
+    ):
+        """
+        Solves the differential equation with multiple initial conditions
+        using JAX's vmap for vectorized computation.
+        """
+        # TODO: implement num_processes argument
+
+        # Convert initial conditions to a JAX array
+        ics_array = jnp.array(ics)
+
+        # Vectorize the solver function over the initial conditions
+        vectorized_solver = jax.vmap(
+            lambda ic: self.generate_numeric_sol_ivp(diffeq_func, args, ic, ti, tf, dt)
         )
-        pool.close()
-        pool.join()
 
-        self.sols.extend(tmp_solutions_list)
+        # Compute solutions
+        solutions = vectorized_solver(ics_array)
+
+        self.sols.extend(solutions)
