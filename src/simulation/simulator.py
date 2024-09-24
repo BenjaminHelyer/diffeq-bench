@@ -7,6 +7,7 @@ from functools import partial
 import matplotlib.pyplot as plt
 import jax
 import jax.numpy as jnp
+import diffrax
 
 from simulation.scipy_solver import SciPySolver
 from simulation.pytorch_solver import PyTorchSolver
@@ -181,17 +182,7 @@ class Simulator:
 
         This is done in paralell via multiprocessing.
         """
-        if self.backend == "jax":
-            self.solve_ics_with_vmap(
-                ics,
-                diffeq_func,
-                args,
-                ti,
-                tf,
-                dt,
-                num_processes,
-            )
-        else:
+        if self.backend != "jax":
             self._multiprocess_solve_ics(
                 ics,
                 diffeq_func,
@@ -201,33 +192,5 @@ class Simulator:
                 dt,
                 num_processes,
             )
-
-    @benchmark_time
-    def solve_ics_with_vmap(
-        self,
-        ics: List[List[float]],
-        diffeq_func: Callable,
-        args: List[float],
-        ti: float,
-        tf: float,
-        dt: float,
-        num_processes: float = None,
-    ):
-        """
-        Solves the differential equation with multiple initial conditions
-        using JAX's vmap for vectorized computation.
-        """
-        # TODO: implement num_processes argument
-
-        # Convert initial conditions to a JAX array
-        ics_array = jnp.array(ics)
-
-        # Vectorize the solver function over the initial conditions
-        vectorized_solver = jax.vmap(
-            lambda ic: self.generate_numeric_sol_ivp(diffeq_func, args, ic, ti, tf, dt)
-        )
-
-        # Compute solutions
-        solutions = vectorized_solver(ics_array)
-
-        self.sols.extend(solutions)
+        else:
+            raise NotImplementedError

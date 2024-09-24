@@ -99,7 +99,7 @@ def test_simulator_cpu_sequential_solve_ics_logistic_growth(
             assert sol.ys[1].size == 100
 
 
-@pytest.mark.parametrize("backend_option", [("scipy"), ("pytorch"), ("jax")])
+@pytest.mark.parametrize("backend_option", [("scipy"), ("pytorch")])
 def test_simulator_cpu_parallel_solve_ics_logistic_growth(
     backend_option, logistic_growth_params
 ):
@@ -130,12 +130,3 @@ def test_simulator_cpu_parallel_solve_ics_logistic_growth(
             assert sol.success == True
         elif backend_option == "pytorch":
             assert sol.size() == torch.Size([100, 2])
-        elif backend_option == "jax":
-            assert sol.ts.size == 100
-            assert len(sol.ys) == 2
-            assert sol.ys[0].size == 100
-            assert sol.ys[1].size == 100
-
-
-if __name__ == "__main__":
-    test_simulator_cpu_parallel_solve_ics_logistic_growth("jax", logistic_growth_params)
