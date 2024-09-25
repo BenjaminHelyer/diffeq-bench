@@ -66,8 +66,16 @@ class Simulator:
         sol = self.solver.solve_ivp(
             func=diffeq_func, ic=ic, ti=ti, tf=tf, dt=dt, args=args
         )
-        self.sols.append(sol)
-        return sol
+        params = {
+            "diffeq_func": diffeq_func,
+            "ic": ic,
+            "ti": ti,
+            "tf": tf,
+            "dt": dt,
+            "args": args,
+        }
+        self.sols.append([sol, params])
+        return sol, params
 
     def plot_numeric_sol_ivp(
         self,
@@ -135,8 +143,8 @@ class Simulator:
         """
         Leveraged by multiprocessing to store the result to a temporary list rather than the class variable.
         """
-        sol = self.generate_numeric_sol_ivp(diffeq_func, args, ic, ti, tf, dt)
-        tmp_solutions_list.append(sol)
+        sol, params = self.generate_numeric_sol_ivp(diffeq_func, args, ic, ti, tf, dt)
+        tmp_solutions_list.append([sol, params])
 
     def _multiprocess_solve_ics(
         self,

@@ -43,7 +43,7 @@ def test_simulator_logistic_growth_happy_path(backend_option, logistic_growth_pa
         backend=backend_option,
     )
 
-    sol = uut_solver.generate_numeric_sol_ivp(
+    sol, params = uut_solver.generate_numeric_sol_ivp(
         diffeq_func=diffeq_logistic_growth,
         args=logistic_growth_params,
         ic=ic,
@@ -87,7 +87,7 @@ def test_simulator_cpu_sequential_solve_ics_logistic_growth(
         dt=0.1,
     )
     assert len(uut_solver.sols) == 3
-    for sol in uut_solver.sols:
+    for sol, params in uut_solver.sols:
         if backend_option == "scipy":
             assert sol.success == True
         elif backend_option == "pytorch":
@@ -125,7 +125,7 @@ def test_simulator_cpu_parallel_solve_ics_logistic_growth(
         num_processes=10,
     )
     assert len(uut_solver.sols) == 3
-    for sol in uut_solver.sols:
+    for sol, params in uut_solver.sols:
         if backend_option == "scipy":
             assert sol.success == True
         elif backend_option == "pytorch":
