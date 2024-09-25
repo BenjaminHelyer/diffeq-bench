@@ -2,10 +2,11 @@
 Library for benchmarking differential equation solvers and methods.
 
 ## Example: Benchmarking Across Many Initial Conditions
-This library can be used to benchmark performance
-when running simulations across initial conditions. The
-animation below shows 100 initial conditions for a Lorenz system;
-benchmarking results indicated that adding CPU multiprocessing
-led to speedups of 5x.
+The animation below shows 100 initial conditions for a Lorenz system.
+Numerically solving across each initial condition is slow when we
+do so sequentially. However, when we solve across various initial
+conditions in parallel via Python multiprocessing, we see
+nearly a 5x speedup in generating the below results compared to
+the sequential approach.
 ![Cool animation](https://github.com/BenjaminHelyer/diffeq-bench/blob/main/media_assets/lorenz_trajectories_100_ics.gif)
 
